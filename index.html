@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gyanna.dev // Personal Finance & Analytics Ledger</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ================= TOP APPLICATION HEADER ================= -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-branding">
+        <span class="header-badge">&lt;G/&gt; LEDGER v2.0</span>
+        <h1 id="app-title">Gyanna's Sixth Form Finance & Analytics Hub</h1>
+      </div>
+      <div class="header-status">
+        <span class="status-indicator"></span>
+        <span class="status-text mono">SYSTEM ONLINE // LOCALSTORAGE ACTIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE CONTAINER ================= -->
+  <main class="dashboard-container">
+
+    <!-- TOP ROW: SUMMARY FINANCIAL KPI CARDS -->
+    <section class="kpi-grid">
+      <!-- Total Balance Card -->
+      <div class="kpi-card balance-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Net Available Balance</span>
+          <span class="kpi-icon">💳</span>
+        </div>
+        <div class="kpi-value mono" id="total-balance">$0.00</div>
+        <div class="kpi-footer">
+          <span id="balance-status" class="badge badge-neutral">Equilibrium</span>
+        </div>
+      </div>
+
+      <!-- Total Income Card -->
+      <div class="kpi-card income-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Inflow (Income)</span>
+          <span class="kpi-icon">📈</span>
+        </div>
+        <div class="kpi-value mono text-income" id="total-income">+$0.00</div>
+        <div class="kpi-footer text-muted" id="income-count">0 credits recorded</div>
+      </div>
+
+      <!-- Total Expense Card -->
+      <div class="kpi-card expense-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Outflow (Expenses)</span>
+          <span class="kpi-icon">📉</span>
+        </div>
+        <div class="kpi-value mono text-expense" id="total-expense">-$0.00</div>
+        <div class="kpi-footer text-muted" id="expense-count">0 debits recorded</div>
+      </div>
+
+      <!-- Savings / Efficiency Ratio Card -->
+      <div class="kpi-card savings-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Savings Efficiency Ratio</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-value mono text-indigo" id="savings-rate">0.0%</div>
+        <div class="kpi-footer text-muted">Inflow retention benchmark</div>
+      </div>
+    </section>
+
+    <!-- MIDDLE ROW: TRANSACTION ENTRY & VISUAL ANALYTICS -->
+    <div class="workbench-grid">
+      
+      <!-- LEFT COLUMN: TRANSACTION ENTRY FORM -->
+      <section class="panel-card form-panel">
+        <div class="panel-header">
+          <h2>Log Transaction</h2>
+          <span class="panel-tag mono">Entry Form</span>
+        </div>
+
+        <form id="transaction-form" onsubmit="handleTransactionSubmit(event)">
+          <!-- Description -->
+          <div class="form-group">
+            <label for="desc-input">Transaction Description</label>
+            <input type="text" id="desc-input" placeholder="e.g. Edexcel Pure Math Textbook" required autocomplete="off">
+          </div>
+
+          <!-- Amount and Type in Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="amount-input">Amount ($)</label>
+              <input type="number" id="amount-input" step="0.01" min="0.01" placeholder="45.00" required>
+            </div>
+
+            <div class="form-group">
+              <label for="type-select">Flow Type</label>
+              <select id="type-select" required>
+                <option value="expense">Expense (-)</option>
+                <option value="income">Income (+)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Category Selection -->
+          <div class="form-group">
+            <label for="category-select">Category Allocation</label>
+            <select id="category-select" required>
+              <option value="Academics">Academics & Books</option>
+              <option value="Technology">Tech & Software Tools</option>
+              <option value="Transport">Transport & Commute</option>
+              <option value="Stipend">Stipend & Allowance</option>
+              <option value="Food">Meals & Nutrition</option>
+              <option value="Other">General Miscellaneous</option>
+            </select>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Add to Ledger</button>
+          </div>
+          <p id="form-error" class="error-banner"></p>
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: NATIVE CANVAS ANALYTICS -->
+      <section class="panel-card chart-panel">
+        <div class="panel-header">
+          <h2>Expense Distribution Analytics</h2>
+          <span class="panel-tag mono">HTML5 Canvas 2D</span>
+        </div>
+        
+        <div class="canvas-wrapper">
+          <canvas id="analyticsCanvas" width="460" height="260"></canvas>
+        </div>
+
+        <div class="chart-legend" id="chart-legend">
+          <!-- Dynamically populated category legend badges -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- BOTTOM ROW: HISTORICAL TRANSACTION LEDGER -->
+    <section class="panel-card ledger-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Operational Ledger & Audit Trail</h2>
+          <p class="panel-sub">Inspect, filter, and manage persistent financial records.</p>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="ledger-filter-group">
+          <button class="filter-chip active" data-filter="all" onclick="filterLedger('all')">All Records</button>
+          <button class="filter-chip" data-filter="income" onclick="filterLedger('income')">Income Only</button>
+          <button class="filter-chip" data-filter="expense" onclick="filterLedger('expense')">Expenses Only</button>
+          <button id="btn-clear-all" class="btn-clear-danger" onclick="clearAllData()">Wipe Cache</button>
+        </div>
+      </div>
+
+      <!-- Ledger Table -->
+      <div class="table-responsive">
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>Date & Stamp</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Flow Type</th>
+              <th class="text-right">Net Value</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-body">
+            <!-- Dynamic <tr> rows injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State Banner -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>No transactions logged yet. Enter your first financial record above!</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= SEMANTIC FOOTER ================= -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 Gyanna Kimana. Built from scratch with Semantic HTML5, CSS3 & JavaScript.</p>
+      <div class="footer-meta mono">
+        <span>Pearson Edexcel IAL IT Unit 2</span>
+        <span>•</span>
+        <span>Data Modeling Milestone 4</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
